@@ -1,10 +1,12 @@
 import axios from 'axios'
 
+// Base URL hanya domain backend, tanpa /api/users
 const api = axios.create({
-    baseURL: import.meta.env.VITE_BASE_URL
+    baseURL: import.meta.env.VITE_BASE_URL, 
+    withCredentials: true, // jika backend perlu credentials
 })
 
-// ✅ Interceptor untuk menambahkan token ke setiap request
+// Interceptor untuk otomatis menambahkan token JWT
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
@@ -13,9 +15,7 @@ api.interceptors.request.use(
     }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
-export default api;
+export default api
