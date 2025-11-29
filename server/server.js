@@ -22,7 +22,7 @@ app.use("/api/users", userRouter);
 app.use("/api/resumes", resumeRouter);
 app.use("/api/ai", aiRouter);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 connectDB().then(() => {
   app.listen(PORT, () => {
