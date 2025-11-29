@@ -21,7 +21,8 @@
     "mongoose": "^8.19.3",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.11",
-    "openai": "^6.9.1"
+    "openai": "^6.9.1",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
