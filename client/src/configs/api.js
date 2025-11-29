@@ -1,16 +1,15 @@
 import axios from 'axios'
 
-// Base URL hanya domain backend, tanpa /api/users
+// Base URL hanya domain backend, **tanpa /api/users**
 const api = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL, 
-    withCredentials: true, // jika backend perlu credentials
+    withCredentials: true,
 })
 
-// Interceptor untuk otomatis menambahkan token JWT
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
-    if (token) {
+    if (token && !config.url.includes('login') && !config.url.includes('register')) {
       config.headers.Authorization = `Bearer ${token}`
     }
     return config
