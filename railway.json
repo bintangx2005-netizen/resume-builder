@@ -1,0 +1,31 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "services": {
+    "backend": {
+      "build": {
+        "builder": "RAILPACK",
+        "startCommand": "node backend/server.js"
+      },
+      "deploy": {
+        "runtime": "V2",
+        "numReplicas": 1,
+        "sleepApplication": false,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      }
+    },
+    "frontend": {
+      "build": {
+        "builder": "RAILPACK",
+        "startCommand": "npm --prefix frontend run dev"
+      },
+      "deploy": {
+        "runtime": "V2",
+        "numReplicas": 1,
+        "sleepApplication": false,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      }
+    }
+  }
+}
