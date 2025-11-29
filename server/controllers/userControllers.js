@@ -15,6 +15,7 @@ const generateToken = (user) => {
 
 // REGISTER USER
 export const registerUser = async (req, res) => {
+  console.log("Register request body:", req.body);
   try {
     const { name, email, password, role } = req.body;
 
