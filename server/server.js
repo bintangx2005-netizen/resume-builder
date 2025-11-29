@@ -7,27 +7,19 @@ import resumeRouter from "./routes/resumeRoutes.js";
 import aiRouter from "./routes/aiRoutes.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-async function startServer() {
-  try {
-    await connectDB(); // Pastikan DB connect dulu
+// Middleware
+app.use(express.json());
+app.use(cors());
 
-    app.use(express.json());
-    app.use(cors());
+// Routes
+app.get("/", (req, res) => res.send("Server is live..."));
+app.use("/api/users", userRouter);
+app.use("/api/resumes", resumeRouter);
+app.use("/api/ai", aiRouter);
 
-    app.get("/", (req, res) => res.send("Server is live..."));
-    app.use("/api/users", userRouter);
-    app.use("/api/resumes", resumeRouter);
-    app.use("/api/ai", aiRouter);
+// Hubungkan database sekali saat file ini diimport
+connectDB();
 
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  } catch (err) {
-    console.error("Error starting server:", err);
-    process.exit(1);
-  }
-}
-
-startServer();
+// ❗ Vercel membutuhkan export default app (TANPA listen)
+export default app;
