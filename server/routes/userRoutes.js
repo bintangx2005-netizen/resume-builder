@@ -20,6 +20,11 @@ router.post("/login", loginUser);
 router.get("/data", protect, getUserById);
 router.get("/resumes", protect, getUserResumes);
 
+// Contoh penggunaan di client
+api.post("/users/register", { name, email, password })
+  .then(res => console.log(res.data))
+  .catch(err => console.error(err));
+
 // RESET PASSWORD TANPA TOKEN
 router.post("/reset-password", resetPassword);
 
