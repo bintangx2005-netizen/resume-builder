@@ -89,7 +89,7 @@ const ResumeBuilder = () => {
             alert('Share not supported on this browser.')
         }
     }
-
+    // Download resume 
     const downloadResume = ()=>{
         window.print();
     }
