@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_BASE_URL, // **Hanya domain, tanpa /api/users**
-    withCredentials: true,
+    baseURL: "https://backend-production-468c.up.railway.app", // **Hanya domain, tanpa /api/users**
+    withCredentials: true
 });
 
 api.interceptors.request.use(
