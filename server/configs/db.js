@@ -16,13 +16,11 @@ const connectDB = async () => {
       console.error("MongoDB connection error:", err);
     });
 
-    await mongoose.connect(mongodbURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    // TANPA opsi deprecated
+    await mongoose.connect(mongodbURI);
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
-    process.exit(1); // Stop server jika DB gagal connect
+    process.exit(1);
   }
 };
 
