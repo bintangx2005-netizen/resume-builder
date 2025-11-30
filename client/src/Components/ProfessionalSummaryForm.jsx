@@ -15,7 +15,7 @@ const ProfessionalSummaryForm = ({data, onChange, setResumeData}) => {
         const prompt = `enhance my professional summary "${data}"`;
 
         // Panggil API (tidak perlu header manual karena interceptor sudah ada)
-        const response = await api.post('/api/ai/enhance-pro-sum', { userContent: prompt })
+        const response = await api.post('/ai/enhance-pro-sum', { userContent: prompt })
         
         setResumeData(prev => ({ ...prev, professional_summary: response.data.enhancedContent }))
     } catch (error) {

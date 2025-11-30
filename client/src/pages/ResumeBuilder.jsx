@@ -36,7 +36,7 @@ const ResumeBuilder = () => {
 
     const loadExistingResume = async () => {
         try {
-         const {data} = await api.get('/api/resumes/get/' + resumeId, {headers: {Authorization: token}})  
+         const {data} = await api.get('/resumes/get/' + resumeId, {headers: {Authorization: token}})  
          if(data.resume){
             setResumeData(data.resume)
             document.title = data.resume.title;
@@ -70,7 +70,7 @@ const ResumeBuilder = () => {
             formData.append("resumeId", resumeId)
             formData.append("resumeData", JSON.stringify({public: !resumeData.public}))
 
-            const {data} = await api.put('/api/resumes/update' , formData, {headers: {Authorization: token}})  
+            const {data} = await api.put('/resumes/update' , formData, {headers: {Authorization: token}})  
 
             setResumeData({...resumeData, public: !resumeData.public})
             toast.success(data.message)
@@ -110,7 +110,7 @@ const ResumeBuilder = () => {
           removeBackground && formData.append("removeBackground" , "yes");
           typeof resumeData.personal_info.image === 'object' && formData.append("image", resumeData.personal_info.image)
 
-          const { data } = await api.put('/api/resumes/update', formData, {headers: {Authorization: token}})
+          const { data } = await api.put('/resumes/update', formData, {headers: {Authorization: token}})
 
           setResumeData(data.resume)
           toast.success(data.message)
