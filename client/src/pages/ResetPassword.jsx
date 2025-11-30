@@ -10,7 +10,7 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await api.post(`/users/reset-password/${token}`, {password});
+      const { data } = await api.post(`/api/users/reset-password/${token}`, {password});
       toast.success(data.message);
       window.location.href = "/";
     } catch (err) {
