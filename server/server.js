@@ -11,9 +11,6 @@ const app = express();
 // ✅ CORS middleware fixed
 app.use(cors());
 
-// Preflight fix
-app.options("*", cors());
-
 // Middleware
 app.use(express.json());
 
