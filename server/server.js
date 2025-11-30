@@ -18,9 +18,9 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
-app.use("/api/users", userRouter);
-app.use("/api/resumes", resumeRouter);
-app.use("/api/ai", aiRouter);
+app.use("/users", userRouter);
+app.use("/resumes", resumeRouter);
+app.use("/ai", aiRouter);
 
 const PORT = process.env.PORT || 8080;
 

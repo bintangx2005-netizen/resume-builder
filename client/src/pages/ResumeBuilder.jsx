@@ -36,7 +36,7 @@ const ResumeBuilder = () => {
 
     const loadExistingResume = async () => {
         try {
-         const {data} = await api.get('/resumes/get/' + resumeId, {headers: {Authorization: token}})  
+         const {data} = await api.get('/api/resumes/get/' + resumeId, {headers: {Authorization: token}})  
          if(data.resume){
             setResumeData(data.resume)
             document.title = data.resume.title;
