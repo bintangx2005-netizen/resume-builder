@@ -24,7 +24,7 @@ const ForgotPassword = () => {
     }
 
     try {
-      const {data} = await api.post('/users/reset-password', {
+      const {data} = await api.post('/api/users/reset-password', {
         email: formData.email,
         newPassword: formData.password
       })
