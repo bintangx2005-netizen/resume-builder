@@ -40,7 +40,7 @@ const App = () => {
       // 2. Ambil data terbaru dari API
       if (token) {
         try {
-          const { data } = await api.get('/api/users/data', {
+          const { data } = await api.get('/users/data', {
             headers: { Authorization: token }
           })
 
