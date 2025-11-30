@@ -4,15 +4,17 @@ import api from '../configs/api'
 import { useDispatch } from 'react-redux'
 import { login } from '../app/features/authSlice'
 import toast from 'react-hot-toast'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+
+
 
 const Login = () => {
+    
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const [searchParams] = useSearchParams()
-
-    const urlState = searchParams.get('state')
-    const [state, setState] = React.useState(urlState === "register" ? "register" : "login")
+    const query = new URLSearchParams(window.location.search)
+    const urlState = query.get('state')
+    const [state, setState] = React.useState(urlState || "login")
 
     const [formData, setFormData] = React.useState({
         name: '',
@@ -23,25 +25,25 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const endpoint = state === "login" ? "login" : "register"
-            const { data } = await api.post(`/users/${endpoint}`, formData)
+            const { data } = await api.post(`/api/users/${state}`, formData)
 
-            if (!data.token) throw new Error("No token received from backend")
-
-            // Simpan token & user ke localStorage
-            localStorage.setItem('token', data.token)
-            localStorage.setItem('role', data.user.role)
+            //simpan user ke redux
             dispatch(login(data))
 
+
+            localStorage.setItem('token', data.token)
+            localStorage.setItem('role', data.user.role)
             toast.success(data.message)
 
+            // Redirect berdasarkan role
             if(data.user.role === 'admin'){
                 navigate('/admin')
             } else {
                 navigate('/app')
-            }
+            } 
         } catch (error) {
             toast(error?.response?.data?.message || error.message)
+            
         }
     }
 
@@ -49,74 +51,35 @@ const Login = () => {
         const { name, value } = e.target
         setFormData(prev => ({ ...prev, [name]: value }))
     }
-
-    const toggleState = () => {
-        const newState = state === "login" ? "register" : "login"
-        setState(newState)
-        navigate(`/app?state=${newState}`)
-    }
-
-    return (
-        <div className='flex items-center justify-center min-h-screen bg-gray-50'>
-            <form onSubmit={handleSubmit} className="sm:w-[350px] w-full text-center border border-gray-300/60 rounded-2xl px-8 bg-white">
+  return (
+    <div className='flex items-center justify-center min-h-screen bg-gray-50'>
+        <form onSubmit={handleSubmit} className="sm:w-[350px] w-full text-center border border-gray-300/60 rounded-2xl px-8 bg-white">
                 <h1 className="text-gray-900 text-3xl mt-10 font-medium">{state === "login" ? "Login" : "Sign up"}</h1>
                 <p className="text-gray-500 text-sm mt-2">Please {state} in to continue</p>
-
-                {state === "register" && (
+                {state !== "login" && (
                     <div className="flex items-center mt-6 w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                         <User2Icon size={16} color='#6B7280'/>
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="Name"
-                            className="border-none outline-none ring-0"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
+                        <input type="text" name="name" placeholder="Name" className="border-none outline-none ring-0" value={formData.name} onChange={handleChange} required />
                     </div>
                 )}
-
                 <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                     <Mail size={13} color='#6B7280' />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email id"
-                        className="border-none outline-none ring-0"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                    />
+                    <input type="email" name="email" placeholder="Email id" className="border-none outline-none ring-0" value={formData.email} onChange={handleChange} required />
                 </div>
                 <div className="flex items-center mt-4 w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
                     <Lock size={13} color='#6B7280'/>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        className="border-none outline-none ring-0"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                    />
+                    <input type="password" name="password" placeholder="Password" className="border-none outline-none ring-0" value={formData.password} onChange={handleChange} required />
                 </div>
-
                 <div className="mt-4 text-left text-green-500">
-                    <button onClick={() => navigate("/forgot-password")} className="text-sm" type="reset">Forgot password?</button>
+                    <button onClick={() => navigate ("/forgot-password")} className="text-sm" type="reset">Forgot password?</button>
                 </div>
-
                 <button type="submit" className="mt-2 w-full h-11 rounded-full text-white bg-green-500 hover:opacity-90 transition-opacity">
                     {state === "login" ? "Login" : "Sign up"}
                 </button>
-
-                <p onClick={toggleState} className="text-gray-500 text-sm mt-3 mb-11 cursor-pointer">
-                    {state === "login" ? "Don't have an account?" : "Already have an account?"} 
-                    <span className="text-green-500 hover:underline"> click here</span>
-                </p>
+                <p onClick={() => setState(prev => prev === "login" ? "register" : "login")} className="text-gray-500 text-sm mt-3 mb-11">{state === "login" ? "Don't have an account?" : "Already have an account?"} <a href="#" className="text-green-500 hover:underline">click here</a></p>
             </form>
-        </div>
-    )
+    </div>
+  )
 }
 
 export default Login
