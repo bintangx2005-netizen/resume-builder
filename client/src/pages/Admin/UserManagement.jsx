@@ -18,7 +18,7 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const { data } = await api.get("/users/all", {
+      const { data } = await api.get("/api/users/all", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -40,7 +40,7 @@ const UserManagement = () => {
     try {
       const token = localStorage.getItem("token");
 
-      await api.delete(`/users/${id}`, {
+      await api.delete(`/api/users/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -66,7 +66,7 @@ const handleUpdate = async () => {
       role: editingUser.role,
     };
 
-    const { data } = await api.put(`/users/${editingUser._id}`, payload, {
+    const { data } = await api.put(`/api/users/${editingUser._id}`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
