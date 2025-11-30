@@ -20,6 +20,7 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
+app.get('/', (req, res)=> res.send('Resume Builder API is running...'))
 app.use("/api/users", userRouter);
 app.use("/api/resumes", resumeRouter);
 app.use("/api/ai", aiRouter);
