@@ -24,60 +24,35 @@ const UserManagement = () => {
         },
       });
 
-      // handle token expired
-     if (!token) {
-      toast.error("Session expired, silakan login ulang");
-      window.location.href = "/login";
-      return;
-    }
-
-     setUsers(data.users);
+      setUsers(data.users);
     } catch (err) {
+      toast.error("Gagal memuat data user");
       console.log(err);
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        toast.error("Session expired, silakan login ulang");
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        toast.error("Gagal memuat data user");
-      }
     } finally {
       setLoading(false);
     }
   };
 
   // DELETE
-  const handleUpdate = async () => {
-  try {
-    const token = localStorage.getItem("token");
+  const handleDelete = async (id) => {
+    if (!confirm("Yakin ingin menghapus user ini?")) return;
 
-    const payload = {
-      name: editingUser.name,
-      email: editingUser.email,
-      role: editingUser.role,
-    };
+    try {
+      const token = localStorage.getItem("token");
 
-    const { data } = await api.put(`/api/users/${editingUser._id}`, payload, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+      await api.delete(`/api/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (data.token) localStorage.setItem("token", data.token);
-
-    toast.success("User berhasil diperbarui");
-    setEditingUser(null);
-    fetchUsers();
+      toast.success("User berhasil dihapus");
+      fetchUsers();
     } catch (err) {
+      toast.error("Gagal menghapus user");
       console.log(err);
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        toast.error("Session expired, silakan login ulang");
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        toast.error("Gagal update user");
-      }
     }
   };
-
 
  // UPDATE
 const handleUpdate = async () => {
