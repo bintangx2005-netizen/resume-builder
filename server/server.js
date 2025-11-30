@@ -8,13 +8,16 @@ import aiRouter from "./routes/aiRoutes.js";
 
 const app = express();
 
-// ✅ CORS middleware
+// ✅ CORS middleware fixed
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? "https://frontend-production-0a65.up.railway.app"
+  origin: process.env.NODE_ENV === "production"
+    ? ["https://frontend-production-0a65.up.railway.app"]
     : ["http://localhost:5173", "http://localhost:5174", "http://localhost:3000"],
-  credentials: true
+  credentials: true,
 }));
+
+// Preflight fix
+app.options("*", cors());
 
 // Middleware
 app.use(express.json());
@@ -27,7 +30,7 @@ app.use("/api/ai", aiRouter);
 
 const PORT = process.env.PORT || 8080;
 
-  connectDB().then(() => {
+connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
