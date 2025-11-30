@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { dummyResumeData } from '../assets/assets'
 import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, Download, DownloadIcon, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Share2Icon, Sparkles, User } from 'lucide-react'
-import PersonalInfoForm from '../Components/PersonalInfoForm'
+import PersonalInfoForm from '../components/PersonalInfoForm'
 import ResumePreview from '../Components/ResumePreview'
-import TemplateSelector from '../Components/TemplateSelector'
-import ColorPicker from '../Components/ColorPicker'
-import ProfessionalSummaryForm from '../Components/ProfessionalSummaryForm'
-import ExperienceForm from '../Components/ExperienceForm'
-import EducationForm from '../Components/EducationForm'
-import ProjectForm from '../Components/ProjectForm'
-import SkillsForm from '../Components/SkillsForm'
+import TemplateSelector from '../components/TemplateSelector'
+import ColorPicker from '../components/ColorPicker'
+import ProfessionalSummaryForm from '../components/ProfessionalSummaryForm'
+import ExperienceForm from '../components/ExperienceForm'
+import EducationForm from '../components/EducationForm'
+import ProjectForm from '../components/ProjectForm'
+import SkillsForm from '../components/SkillsForm'
 import { useSelector } from 'react-redux'
 import api from '../configs/api'
 import toast from 'react-hot-toast'
@@ -36,7 +36,7 @@ const ResumeBuilder = () => {
 
     const loadExistingResume = async () => {
         try {
-         const {data} = await api.get('/resumes/get/' + resumeId, {headers: {Authorization: token}})  
+         const {data} = await api.get('/api/resumes/get/' + resumeId, {headers: {Authorization: token}})  
          if(data.resume){
             setResumeData(data.resume)
             document.title = data.resume.title;
@@ -70,7 +70,7 @@ const ResumeBuilder = () => {
             formData.append("resumeId", resumeId)
             formData.append("resumeData", JSON.stringify({public: !resumeData.public}))
 
-            const {data} = await api.put('/resumes/update' , formData, {headers: {Authorization: token}})  
+            const {data} = await api.put('/api/resumes/update' , formData, {headers: {Authorization: token}})  
 
             setResumeData({...resumeData, public: !resumeData.public})
             toast.success(data.message)
@@ -89,7 +89,7 @@ const ResumeBuilder = () => {
             alert('Share not supported on this browser.')
         }
     }
-    // Download resume 
+
     const downloadResume = ()=>{
         window.print();
     }
@@ -110,7 +110,7 @@ const ResumeBuilder = () => {
           removeBackground && formData.append("removeBackground" , "yes");
           typeof resumeData.personal_info.image === 'object' && formData.append("image", resumeData.personal_info.image)
 
-          const { data } = await api.put('/resumes/update', formData, {headers: {Authorization: token}})
+          const { data } = await api.put('/api/resumes/update', formData, {headers: {Authorization: token}})
 
           setResumeData(data.resume)
           toast.success(data.message)
@@ -206,7 +206,7 @@ const ResumeBuilder = () => {
                             </div>
                         </div>
                         
-                        <ResumePreview  data={resumeData} template={resumeData.template} accentColor={resumeData.accent_color}/>
+                        <ResumePreview data={resumeData} template={resumeData.template} accentColor={resumeData.accent_color}/>
                     </div>
                 </div>
             </div>
