@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // baru
 
   // State untuk search dan filter
   const [search, setSearch] = useState("");
@@ -14,21 +15,24 @@ const UserManagement = () => {
   const [editingUser, setEditingUser] = useState(null);
 
   const fetchUsers = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw { response: { status: 401 } };
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setIsLoggedIn(false);
+      setLoading(false);
+      return;
+    }
 
+    try {
       const { data } = await api.get("/api/users/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       setUsers(data.users);
     } catch (err) {
       console.log(err);
       if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired, silakan login ulang");
         localStorage.removeItem("token");
-        window.location.href = "/login";
+        setIsLoggedIn(false);
       } else {
         toast.error("Gagal memuat data user");
       }
@@ -37,18 +41,19 @@ const UserManagement = () => {
     }
   };
 
-  // DELETE
   const handleDelete = async (id) => {
     if (!confirm("Yakin ingin menghapus user ini?")) return;
 
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw { response: { status: 401 } };
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setIsLoggedIn(false);
+      return;
+    }
 
+    try {
       await api.delete(`/api/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       toast.success("User berhasil dihapus");
       fetchUsers();
     } catch (err) {
@@ -56,19 +61,21 @@ const UserManagement = () => {
       if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired, silakan login ulang");
         localStorage.removeItem("token");
-        window.location.href = "/login";
+        setIsLoggedIn(false);
       } else {
         toast.error("Gagal menghapus user");
       }
     }
   };
 
-  // UPDATE
   const handleUpdate = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw { response: { status: 401 } };
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setIsLoggedIn(false);
+      return;
+    }
 
+    try {
       const payload = {
         name: editingUser.name,
         email: editingUser.email,
@@ -82,7 +89,6 @@ const UserManagement = () => {
       );
 
       if (data.token) localStorage.setItem("token", data.token);
-
       toast.success("User berhasil diperbarui");
       setEditingUser(null);
       fetchUsers();
@@ -91,7 +97,7 @@ const UserManagement = () => {
       if (err.response?.status === 401 || err.response?.status === 403) {
         toast.error("Session expired, silakan login ulang");
         localStorage.removeItem("token");
-        window.location.href = "/login";
+        setIsLoggedIn(false);
       } else {
         toast.error("Gagal update user");
       }
@@ -103,6 +109,11 @@ const UserManagement = () => {
   }, []);
 
   if (loading) return <p className="text-center p-4">Loading...</p>;
+
+  if (!isLoggedIn) {
+    window.location.href = "/login"; // redirect jika token invalid
+    return null;
+  }
 
   const filteredUsers = users.filter((u) => {
     const matchesSearch =
