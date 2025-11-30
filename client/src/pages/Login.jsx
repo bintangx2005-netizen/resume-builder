@@ -26,7 +26,8 @@ const Login = () => {
         try {
             // Kirim request ke backend sesuai state
             const endpoint = state === "login" ? "login" : "register"
-            const { data } = await api.post(`/users/${endpoint}`, formData)
+            const { data } = await api.post(`/api/users/${endpoint}`, formData)
+            // Simpan user & token ke redux
             dispatch(login(data))
             localStorage.setItem('token', data.token)
             localStorage.setItem('role', data.user.role)
