@@ -10,24 +10,28 @@ const UserManagement = () => {
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState("all");
 
-
   // State untuk edit
   const [editingUser, setEditingUser] = useState(null);
 
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
+      if (!token) throw { response: { status: 401 } };
 
       const { data } = await api.get("/api/users/all", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       setUsers(data.users);
     } catch (err) {
-      toast.error("Gagal memuat data user");
       console.log(err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        toast.error("Session expired, silakan login ulang");
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      } else {
+        toast.error("Gagal memuat data user");
+      }
     } finally {
       setLoading(false);
     }
@@ -39,52 +43,60 @@ const UserManagement = () => {
 
     try {
       const token = localStorage.getItem("token");
+      if (!token) throw { response: { status: 401 } };
 
       await api.delete(`/api/users/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       toast.success("User berhasil dihapus");
       fetchUsers();
     } catch (err) {
-      toast.error("Gagal menghapus user");
       console.log(err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        toast.error("Session expired, silakan login ulang");
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      } else {
+        toast.error("Gagal menghapus user");
+      }
     }
   };
 
- // UPDATE
-const handleUpdate = async () => {
-  try {
-    const token = localStorage.getItem("token");
+  // UPDATE
+  const handleUpdate = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw { response: { status: 401 } };
 
-    // HANYA kirim field aman
-    const payload = {
-      name: editingUser.name,
-      email: editingUser.email,
-      role: editingUser.role,
-    };
+      const payload = {
+        name: editingUser.name,
+        email: editingUser.email,
+        role: editingUser.role,
+      };
 
-    const { data } = await api.put(`/api/users/${editingUser._id}`, payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const { data } = await api.put(
+        `/api/users/${editingUser._id}`,
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
+      if (data.token) localStorage.setItem("token", data.token);
+
+      toast.success("User berhasil diperbarui");
+      setEditingUser(null);
+      fetchUsers();
+    } catch (err) {
+      console.log(err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        toast.error("Session expired, silakan login ulang");
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      } else {
+        toast.error("Gagal update user");
+      }
     }
-
-    toast.success("User berhasil diperbarui");
-    setEditingUser(null);
-    fetchUsers();
-  } catch (err) {
-    toast.error("Gagal update user");
-    console.log(err);
-  }
-};
-
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -92,16 +104,14 @@ const handleUpdate = async () => {
 
   if (loading) return <p className="text-center p-4">Loading...</p>;
 
-  // logika untuk search dan filter
   const filteredUsers = users.filter((u) => {
-  const matchesSearch =
-    u.name.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch =
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase());
 
-  const matchesRole =
-    filterRole === "all" ? true : u.role === filterRole;
+    const matchesRole = filterRole === "all" ? true : u.role === filterRole;
 
-  return matchesSearch && matchesRole;
+    return matchesSearch && matchesRole;
   });
 
   return (
@@ -110,24 +120,24 @@ const handleUpdate = async () => {
 
       {/* SEARCH & FILTER */}
       <div className="flex flex-col md:flex-row gap-3 mb-4">
-      <input
-        type="text"
-        placeholder="Cari nama atau email..."
-        className="border p-2 rounded w-full md:w-1/2"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+        <input
+          type="text"
+          placeholder="Cari nama atau email..."
+          className="border p-2 rounded w-full md:w-1/2"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
-      <select
-        className="border p-2 rounded w-full md:w-40"
-        value={filterRole}
-        onChange={(e) => setFilterRole(e.target.value)}
-      >
-        <option value="all">Semua Role</option>
-        <option  value="admin">Admin</option>
-        <option value="user">User</option>
-      </select>
-    </div>
+        <select
+          className="border p-2 rounded w-full md:w-40"
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+        >
+          <option value="all">Semua Role</option>
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
+        </select>
+      </div>
 
       <div className="bg-white shadow rounded p-4">
         <table className="w-full border">
@@ -139,7 +149,6 @@ const handleUpdate = async () => {
               <th className="border p-2">Edit</th>
               <th className="border p-2">Delete</th>
             </tr>
-            
           </thead>
 
           <tbody>
@@ -171,7 +180,6 @@ const handleUpdate = async () => {
           </tbody>
         </table>
       </div>
-      
 
       {/* FORM UPDATE */}
       {editingUser && (
@@ -227,4 +235,3 @@ const handleUpdate = async () => {
 };
 
 export default UserManagement;
-
