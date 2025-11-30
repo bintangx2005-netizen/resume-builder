@@ -10,7 +10,9 @@ const app = express();
 
 // ✅ CORS middleware
 app.use(cors({
-  origin: "https://frontend-production-0a65.up.railway.app", // frontend URL di Railway
+  origin: process.env.NODE_ENV === 'production' 
+    ? "https://frontend-production-0a65.up.railway.app"
+    : ["http://localhost:5173", "http://localhost:5174", "http://localhost:3000"],
   credentials: true
 }));
 
