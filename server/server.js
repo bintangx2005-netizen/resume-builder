@@ -9,12 +9,7 @@ import aiRouter from "./routes/aiRoutes.js";
 const app = express();
 
 // ✅ CORS middleware fixed
-app.use(cors({
-  origin: process.env.NODE_ENV === "production"
-    ? ["https://frontend-production-0a65.up.railway.app"]
-    : ["http://localhost:5173", "http://localhost:5174", "http://localhost:3000"],
-  credentials: true,
-}));
+app.use(cors());
 
 // Preflight fix
 app.options("*", cors());
