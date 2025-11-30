@@ -25,7 +25,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const { data } = await api.post(`/users/${state}`, formData)
+            const { data } = await api.post(`/api/users/${state}`, formData)
 
             //simpan user ke redux
             dispatch(login(data))
