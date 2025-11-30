@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_BASE_URL + "/api", // **Hanya domain, tanpa /api/users**
-    withCredentials: true
+  baseURL: import.meta.env.VITE_BASE_URL + '/api', // Hanya satu /api
+  withCredentials: true
 });
 
+// Tambahkan token otomatis
 api.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');

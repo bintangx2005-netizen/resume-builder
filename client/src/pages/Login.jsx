@@ -11,7 +11,6 @@ const Login = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
 
-    // Ambil state dari query, default "login"
     const urlState = searchParams.get('state')
     const [state, setState] = React.useState(urlState === "register" ? "register" : "login")
 
@@ -24,22 +23,23 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            // Kirim request ke backend sesuai state
             const endpoint = state === "login" ? "login" : "register"
             const { data } = await api.post(`/users/${endpoint}`, formData)
-            // Simpan user & token ke redux
-            dispatch(login(data))
+
+            if (!data.token) throw new Error("No token received from backend")
+
+            // Simpan token & user ke localStorage
             localStorage.setItem('token', data.token)
             localStorage.setItem('role', data.user.role)
+            dispatch(login(data))
 
             toast.success(data.message)
 
-            // Redirect berdasarkan role
             if(data.user.role === 'admin'){
                 navigate('/admin')
             } else {
                 navigate('/app')
-            } 
+            }
         } catch (error) {
             toast(error?.response?.data?.message || error.message)
         }
@@ -53,7 +53,7 @@ const Login = () => {
     const toggleState = () => {
         const newState = state === "login" ? "register" : "login"
         setState(newState)
-        navigate(`/app?state=${newState}`) // Update URL
+        navigate(`/app?state=${newState}`)
     }
 
     return (
