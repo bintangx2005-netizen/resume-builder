@@ -15,6 +15,7 @@ import { verifyToken as protect, verifyAdmin } from "../middlewares/authMiddlewa
 
 const router = express.Router();
 
+// PUBLIC ROUTES
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/data", protect, getUserById);
