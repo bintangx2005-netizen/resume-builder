@@ -29,6 +29,18 @@ const ExperienceForm = ({ data, onChange}) => {
     const updatedExperience = (index, field, value)=>{
         const updated = [...data];
         updated[index] = {...updated[index], [field]: value}
+
+        // Validasi tanggal (jika bukan current job)
+        if(!current.is_current && current.start_date && current_date){
+            const start = new Date(current.start_date);
+            const end = new Date (current.end_date);
+
+            if(start > end){
+                alert("Tanggal mulai tidak boleh lebih besat dari tanggal selesai!.")
+                return; //hentikan update
+            }
+        }
+        updated[index] = current;
         onChange(updated)
     }
 
