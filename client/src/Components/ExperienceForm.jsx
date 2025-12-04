@@ -29,6 +29,19 @@ const ExperienceForm = ({ data, onChange}) => {
     const updatedExperience = (index, field, value)=>{
         const updated = [...data];
         updated[index] = {...updated[index], [field]: value}
+
+        // VALIDASI: Start date tidak boleh lebih besar dari end date
+        if (!current.is_current && current.start_date && current.end_date) {
+            const start = new Date(current.start_date);
+            const end = new Date(current.end_date);
+
+            if (start > end) {
+                toast.error("Start date cannot be later than end date.");
+                return; // hentikan update
+            }
+        }
+
+    updated[index] = current;
         onChange(updated)
     }
 
