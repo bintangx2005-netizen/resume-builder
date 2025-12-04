@@ -20,10 +20,24 @@ const EducationForm = ({data, onChange}) => {
     }
 
     const updatedEducation = (index, field, value)=>{
-        const updated = [...data];
-        updated[index] = {...updated[index], [field]: value}
-        onChange(updated)
+
+    // Validasi GPA hanya boleh angka + titik
+    if (field === "gpa") {
+        // Hanya izinkan angka dan titik
+        const numericOnly = value.replace(/[^0-9.]/g, "");
+
+        // Mencegah lebih dari satu titik agar tetap valid (contoh: 3.25)
+        const parts = numericOnly.split(".");
+        if (parts.length > 2) return; // stop jika ada 2 titik
+
+        value = numericOnly;
     }
+
+        const updated = [...data];
+        updated[index] = {...updated[index], [field]: value};
+        onChange(updated);
+    };
+
 
   return (
    <div className='space-y-6'>
