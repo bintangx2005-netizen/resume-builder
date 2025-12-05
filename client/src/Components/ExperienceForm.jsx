@@ -26,7 +26,7 @@ const ExperienceForm = ({ data, onChange}) => {
         onChange(updated)
     }
 
-   const updatedExperience = (index, field, value) => {
+    const updatedExperience = (index, field, value) => {
     const updated = [...data];
     const current = { ...updated[index], [field]: value };
 
