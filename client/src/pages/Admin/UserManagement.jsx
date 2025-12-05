@@ -6,16 +6,12 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // State search & filter
+  // State untuk search dan filter
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState("all");
 
-  // State edit
+  // State untuk edit
   const [editingUser, setEditingUser] = useState(null);
-
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
 
   const fetchUsers = async () => {
     try {
@@ -79,9 +75,11 @@ const UserManagement = () => {
         role: editingUser.role,
       };
 
-      const { data } = await api.put(`/api/users/${editingUser._id}`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await api.put(
+        `/api/users/${editingUser._id}`,
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       if (data.token) localStorage.setItem("token", data.token);
 
@@ -106,7 +104,6 @@ const UserManagement = () => {
 
   if (loading) return <p className="text-center p-4">Loading...</p>;
 
-  // FILTERING
   const filteredUsers = users.filter((u) => {
     const matchesSearch =
       u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -116,16 +113,6 @@ const UserManagement = () => {
 
     return matchesSearch && matchesRole;
   });
-
-  // PAGINATION
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const paginatedUsers = filteredUsers.slice(indexOfFirst, indexOfLast);
-
-  const goToPage = (page) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
-  };
 
   return (
     <div className="p-6">
@@ -138,19 +125,13 @@ const UserManagement = () => {
           placeholder="Cari nama atau email..."
           className="border p-2 rounded w-full md:w-1/2"
           value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setCurrentPage(1); // reset halaman
-          }}
+          onChange={(e) => setSearch(e.target.value)}
         />
 
         <select
           className="border p-2 rounded w-full md:w-40"
           value={filterRole}
-          onChange={(e) => {
-            setFilterRole(e.target.value);
-            setCurrentPage(1); // reset halaman
-          }}
+          onChange={(e) => setFilterRole(e.target.value)}
         >
           <option value="all">Semua Role</option>
           <option value="admin">Admin</option>
@@ -171,72 +152,33 @@ const UserManagement = () => {
           </thead>
 
           <tbody>
-            {paginatedUsers.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="p-4 text-center text-gray-500">
-                  Tidak ada data
+            {filteredUsers.map((u) => (
+              <tr key={u._id}>
+                <td className="border p-2">{u.name}</td>
+                <td className="border p-2">{u.email}</td>
+                <td className="border p-2">{u.role}</td>
+
+                <td className="border p-2 text-center">
+                  <button
+                    className="px-3 py-1 bg-yellow-500 text-white rounded"
+                    onClick={() => setEditingUser(u)}
+                  >
+                    Edit
+                  </button>
+                </td>
+
+                <td className="border p-2 text-center">
+                  <button
+                    className="px-3 py-1 bg-red-500 text-white rounded"
+                    onClick={() => handleDelete(u._id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
-            ) : (
-              paginatedUsers.map((u) => (
-                <tr key={u._id}>
-                  <td className="border p-2">{u.name}</td>
-                  <td className="border p-2">{u.email}</td>
-                  <td className="border p-2">{u.role}</td>
-
-                  <td className="border p-2 text-center">
-                    <button
-                      className="px-3 py-1 bg-yellow-500 text-white rounded"
-                      onClick={() => setEditingUser(u)}
-                    >
-                      Edit
-                    </button>
-                  </td>
-
-                  <td className="border p-2 text-center">
-                    <button
-                      className="px-3 py-1 bg-red-500 text-white rounded"
-                      onClick={() => handleDelete(u._id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
-      </div>
-
-      {/* PAGINATION */}
-      <div className="flex justify-center mt-4 gap-2">
-        <button
-          className="px-3 py-1 border rounded"
-          onClick={() => goToPage(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Prev
-        </button>
-
-        {[...Array(totalPages)].map((_, i) => (
-          <button
-            key={i}
-            className={`px-3 py-1 border rounded ${
-              currentPage === i + 1 ? "bg-blue-500 text-white" : ""
-            }`}
-            onClick={() => goToPage(i + 1)}
-          >
-            {i + 1}
-          </button>
-        ))}
-
-        <button
-          className="px-3 py-1 border rounded"
-          onClick={() => goToPage(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
       </div>
 
       {/* FORM UPDATE */}
