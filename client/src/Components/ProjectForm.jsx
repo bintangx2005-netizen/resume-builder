@@ -6,6 +6,8 @@ const ProjectForm = ({data, onChange}) => {
             const newProject = {
                 name: "",
                 type: "",
+                start_date: "",
+                end_date: "",
                 description: "",
                 
             };
