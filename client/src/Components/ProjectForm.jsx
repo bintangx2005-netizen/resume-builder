@@ -1,85 +1,141 @@
 import { Plus, Trash2 } from 'lucide-react';
-import React from 'react'
+import React from 'react';
+import toast from 'react-hot-toast';
 
-const ProjectForm = ({data, onChange}) => {
-     const addProject = () =>{
-            const newProject = {
-                name: "",
-                type: "",
-                start_date: "",
-                end_date: "",
-                description: "",
-                
-            };
-            onChange([...data, newProject])
-        }
+const ProjectForm = ({ data, onChange }) => {
 
-    const removeProject = (index)=>{
-        const updated = data.filter((_, i)=> i !== index);
-        onChange(updated)
-    }
+  const addProject = () => {
+    const newProject = {
+      name: "",
+      type: "",
+      start_date: "",
+      end_date: "",
+      description: "",
+      is_current: false, // untuk future-proof jika dipakai
+    };
+    onChange([...data, newProject]);
+  };
 
-    const updatedProject = (index, field, value) => {
+  const removeProject = (index) => {
+    const updated = data.filter((_, i) => i !== index);
+    onChange(updated);
+  };
+
+  const updatedProject = (index, field, value) => {
     const updated = [...data];
     const current = { ...updated[index], [field]: value };
 
-        // VALIDASI HANYA UNTUK TANGGAL
-    if ((field === "start_date" || field === "end_date") && 
-        !current.is_current &&
-        current.start_date &&
-        current.end_date
+    // VALIDASI TANGGAL
+    if (
+      (field === "start_date" || field === "end_date") &&
+      !current.is_current &&
+      current.start_date &&
+      current.end_date
     ) {
-        const start = new Date(current.start_date);
-        const end = new Date(current.end_date);
+      const start = new Date(current.start_date);
+      const end = new Date(current.end_date);
 
-        if (start > end) {
-            toast.error("Start date cannot be later than end date.");
-            return;
-        }
+      if (start > end) {
+        toast.error("Start date cannot be later than end date.");
+        return;
+      }
     }
 
-        updated[index] = current;
-        onChange(updated);
-    };
+    updated[index] = current;
+    onChange(updated);
+  };
+
   return (
-    <div >
-        <div className='flex items-center justify-between'>
-            <div>
-                <h3 className='flex items-center gap-2 text-lg font-semibold text-gray-900'>Projects</h3>
-                <p className='text-sm text-gray-500'>Add your Education Projects</p>
-            </div>
-            <button onClick={addProject} className='flex items-center gap-2 px-3 py-1 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors disabled:opacity-50'>
-                <Plus className='size-4'/>
-                Add project
-            </button>
+    <div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+            Projects
+          </h3>
+          <p className="text-sm text-gray-500">
+            Add your Education Projects
+          </p>
         </div>
-        
-        
-            <div className='space-y-4 mt-6'>
-                {data.map((project, index)=> (
-                    <div key={index} className="p-4 border border-gray-200 rounded-lg space-y-3">
-                        <div className='flex justify-between items-start'>
-                            <h4>Project #{index + 1}</h4>
-                            <button onClick={()=> removeProject(index)} className='text-red-500 hover:text-red-700 transition-colors'>
-                                <Trash2 className='size-4'/>
-                            </button>
-                        </div>
-                        <div className='grid gap-3'>
-                            <input value={project.name || ""} onChange={(e)=> updatedProject(index, "name", e.target.value)} type="text" placeholder="Project Name" className='px-3 py-2 text-sm rounded-lg'/>
-                            <input value={project.type || ""} onChange={(e)=> updatedProject(index, "type", e.target.value)} type="text" placeholder="Project Type" className='px-3 py-2 text-sm rounded-lg'/>
-                            <input value={project.start_date || ""} onChange={(e)=> updatedProject(index, "start_date", e.target.value)} type="date" placeholder="Start Date" className='px-3 py-2 text-sm rounded-lg'/>
-                            <input value={project.end_date || ""} onChange={(e)=> updatedProject(index, "end_date", e.target.value)} type="date" placeholder="End Date" className='px-3 py-2 text-sm rounded-lg'/>
 
-                            <textarea rows={4} value={project.description || ""} onChange={(e)=> updatedProject(index, "description", e.target.value)}  placeholder="Describe your project" className="w-full px-3 py-2 text-sm rounded-lg resize-none"/>
-                            
-                        </div>
-                                                                      
-                    </div>
-                ))}
+        <button
+          onClick={addProject}
+          className="flex items-center gap-2 px-3 py-1 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+        >
+          <Plus className="size-4" />
+          Add project
+        </button>
+      </div>
+
+      <div className="space-y-4 mt-6">
+        {data.map((project, index) => (
+          <div
+            key={index}
+            className="p-4 border border-gray-200 rounded-lg space-y-3"
+          >
+            <div className="flex justify-between items-start">
+              <h4>Project #{index + 1}</h4>
+              <button
+                onClick={() => removeProject(index)}
+                className="text-red-500 hover:text-red-700 transition-colors"
+              >
+                <Trash2 className="size-4" />
+              </button>
             </div>
-        
-    </div>
-  )
-}
 
-export default ProjectForm
+            <div className="grid gap-3">
+              <input
+                value={project.name || ""}
+                onChange={(e) =>
+                  updatedProject(index, "name", e.target.value)
+                }
+                type="text"
+                placeholder="Project Name"
+                className="px-3 py-2 text-sm rounded-lg"
+              />
+
+              <input
+                value={project.type || ""}
+                onChange={(e) =>
+                  updatedProject(index, "type", e.target.value)
+                }
+                type="text"
+                placeholder="Project Type"
+                className="px-3 py-2 text-sm rounded-lg"
+              />
+
+              <input
+                value={project.start_date || ""}
+                onChange={(e) =>
+                  updatedProject(index, "start_date", e.target.value)
+                }
+                type="date"
+                className="px-3 py-2 text-sm rounded-lg"
+              />
+
+              <input
+                value={project.end_date || ""}
+                onChange={(e) =>
+                  updatedProject(index, "end_date", e.target.value)
+                }
+                type="date"
+                className="px-3 py-2 text-sm rounded-lg"
+              />
+
+              <textarea
+                rows={4}
+                value={project.description || ""}
+                onChange={(e) =>
+                  updatedProject(index, "description", e.target.value)
+                }
+                placeholder="Describe your project"
+                className="w-full px-3 py-2 text-sm rounded-lg resize-none"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ProjectForm;
