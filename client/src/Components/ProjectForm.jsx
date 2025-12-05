@@ -17,11 +17,28 @@ const ProjectForm = ({data, onChange}) => {
         onChange(updated)
     }
 
-    const updatedProject = (index, field, value)=>{
-        const updated = [...data];
-        updated[index] = {...updated[index], [field]: value}
-        onChange(updated)
+    const updatedProject = (index, field, value) => {
+    const updated = [...data];
+    const current = { ...updated[index], [field]: value };
+
+        // VALIDASI HANYA UNTUK TANGGAL
+    if ((field === "start_date" || field === "end_date") && 
+        !current.is_current &&
+        current.start_date &&
+        current.end_date
+    ) {
+        const start = new Date(current.start_date);
+        const end = new Date(current.end_date);
+
+        if (start > end) {
+            toast.error("Start date cannot be later than end date.");
+            return;
+        }
     }
+
+        updated[index] = current;
+        onChange(updated);
+    };
   return (
     <div >
         <div className='flex items-center justify-between'>
@@ -48,6 +65,8 @@ const ProjectForm = ({data, onChange}) => {
                         <div className='grid gap-3'>
                             <input value={project.name || ""} onChange={(e)=> updatedProject(index, "name", e.target.value)} type="text" placeholder="Project Name" className='px-3 py-2 text-sm rounded-lg'/>
                             <input value={project.type || ""} onChange={(e)=> updatedProject(index, "type", e.target.value)} type="text" placeholder="Project Type" className='px-3 py-2 text-sm rounded-lg'/>
+                            <input value={project.start_date || ""} onChange={(e)=> updatedProject(index, "start_date", e.target.value)} type="date" placeholder="Start Date" className='px-3 py-2 text-sm rounded-lg'/>
+                            <input value={project.end_date || ""} onChange={(e)=> updatedProject(index, "end_date", e.target.value)} type="date" placeholder="End Date" className='px-3 py-2 text-sm rounded-lg'/>
 
                             <textarea rows={4} value={project.description || ""} onChange={(e)=> updatedProject(index, "description", e.target.value)}  placeholder="Describe your project" className="w-full px-3 py-2 text-sm rounded-lg resize-none"/>
                             
