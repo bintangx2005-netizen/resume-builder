@@ -6,12 +6,16 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // State untuk search dan filter
+  // Search & Filter
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState("all");
 
-  // State untuk edit
+  // Edit
   const [editingUser, setEditingUser] = useState(null);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 5;
 
   const fetchUsers = async () => {
     try {
@@ -37,7 +41,6 @@ const UserManagement = () => {
     }
   };
 
-  // DELETE
   const handleDelete = async (id) => {
     if (!confirm("Yakin ingin menghapus user ini?")) return;
 
@@ -53,17 +56,10 @@ const UserManagement = () => {
       fetchUsers();
     } catch (err) {
       console.log(err);
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        toast.error("Session expired, silakan login ulang");
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        toast.error("Gagal menghapus user");
-      }
+      toast.error("Gagal menghapus user");
     }
   };
 
-  // UPDATE
   const handleUpdate = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -88,13 +84,7 @@ const UserManagement = () => {
       fetchUsers();
     } catch (err) {
       console.log(err);
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        toast.error("Session expired, silakan login ulang");
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        toast.error("Gagal update user");
-      }
+      toast.error("Gagal update user");
     }
   };
 
@@ -102,8 +92,14 @@ const UserManagement = () => {
     fetchUsers();
   }, []);
 
+  // Reset page setiap search / filter
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, filterRole]);
+
   if (loading) return <p className="text-center p-4">Loading...</p>;
 
+  // Filter
   const filteredUsers = users.filter((u) => {
     const matchesSearch =
       u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -113,6 +109,12 @@ const UserManagement = () => {
 
     return matchesSearch && matchesRole;
   });
+
+  // Pagination
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   return (
     <div className="p-6">
@@ -139,7 +141,8 @@ const UserManagement = () => {
         </select>
       </div>
 
-      <div className="bg-white shadow rounded p-4">
+      {/* TABLE */}
+      <div className="bg-white shadow rounded p-4 overflow-x-auto">
         <table className="w-full border">
           <thead>
             <tr className="bg-gray-200">
@@ -152,7 +155,7 @@ const UserManagement = () => {
           </thead>
 
           <tbody>
-            {filteredUsers.map((u) => (
+            {currentUsers.map((u) => (
               <tr key={u._id}>
                 <td className="border p-2">{u.name}</td>
                 <td className="border p-2">{u.email}</td>
@@ -177,11 +180,54 @@ const UserManagement = () => {
                 </td>
               </tr>
             ))}
+
+            {currentUsers.length === 0 && (
+              <tr>
+                <td colSpan="5" className="text-center py-4">
+                  Tidak ada user ditemukan
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* FORM UPDATE */}
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-4 gap-2">
+          <button
+            className="px-3 py-1 bg-slate-300 rounded disabled:opacity-50"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+          >
+            Prev
+          </button>
+
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i}
+              className={`px-3 py-1 rounded ${
+                currentPage === i + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-slate-200"
+              }`}
+              onClick={() => setCurrentPage(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            className="px-3 py-1 bg-slate-300 rounded disabled:opacity-50"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* EDIT FORM */}
       {editingUser && (
         <div className="mt-6 p-4 bg-gray-100 rounded shadow">
           <h2 className="text-xl font-bold mb-3">Edit User</h2>
