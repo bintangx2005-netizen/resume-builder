@@ -7,7 +7,8 @@ const ProjectForm = ({data, onChange}) => {
                 name: "",
                 type: "",
                 description: "",
-                
+                start_date: "",
+                end_date: ""
             };
             onChange([...data, newProject])
         }
@@ -48,6 +49,8 @@ const ProjectForm = ({data, onChange}) => {
                         <div className='grid gap-3'>
                             <input value={project.name || ""} onChange={(e)=> updatedProject(index, "name", e.target.value)} type="text" placeholder="Project Name" className='px-3 py-2 text-sm rounded-lg'/>
                             <input value={project.type || ""} onChange={(e)=> updatedProject(index, "type", e.target.value)} type="text" placeholder="Project Type" className='px-3 py-2 text-sm rounded-lg'/>
+                            <input value={project.start_date || ""} onChange={(e)=> updatedProject(index, "start_date", e.target.value)} type="date" placeholder="Start Date" className='px-3 py-2 text-sm rounded-lg'/>
+                            <input value={project.end_date || ""} onChange={(e)=> updatedProject(index, "end_date", e.target.value)} type="date" placeholder="End Date" className='px-3 py-2 text-sm rounded-lg'/>
 
                             <textarea rows={4} value={project.description || ""} onChange={(e)=> updatedProject(index, "description", e.target.value)}  placeholder="Describe your project" className="w-full px-3 py-2 text-sm rounded-lg resize-none"/>
                             

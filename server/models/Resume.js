@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { start } from "repl";
 
 const ResumeSchema = new mongoose.Schema({
     userId: {type: mongoose.Schema.Types.ObjectId, ref: "User"},
@@ -34,6 +35,9 @@ const ResumeSchema = new mongoose.Schema({
             name: {type: String},
             type: {type: String},
             description: {type: String},
+            start_date: {type: String},
+            end_date: {type: String}
+
         }
     ],
     education: [
